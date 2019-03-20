@@ -1,0 +1,35 @@
+version: "2.2"
+
+services:
+  fluentd:
+    build: .
+    ports:
+      - "24224:24224"
+      - "8099:80"
+    environment:
+      - http_proxy=${http_proxy}
+      - https_proxy=${http_proxy}
+      - HTTP_PROXY=${http_proxy}
+      - HTTPS_PROXY=${http_proxy}
+      - no_proxy=fluentd_fluentd_debug_server_1
+    volumes:
+      - ./var/log/td-agent:/var/log/td-agent
+      - /var/log/apache2:/var/log/apache2
+      - ./etc/td-agent/td-agent.conf:/etc/td-agent/td-agent.conf
+  fluentd_debug_server:
+    build: ./debug_server
+    ports:
+      - "34224:24224"
+    environment:
+      - http_proxy=${http_proxy}
+      - https_proxy=${http_proxy}
+      - HTTP_PROXY=${http_proxy}
+      - HTTPS_PROXY=${http_proxy}
+    volumes:
+      - ./debug_server/var/log/td-agent:/debug_server/var/log/td-agent
+      - ./debug_server/etc/td-agent/td-agent.conf:/etc/td-agent/td-agent.conf
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: 172.40.1.0/24

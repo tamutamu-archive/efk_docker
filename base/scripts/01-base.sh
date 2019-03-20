@@ -13,7 +13,8 @@ sed -i \
 
 
 INSTALL_PACKAGES="\
-    apache2 \
+    sudo \
+    wget \
     language-pack-ja \
     tzdata \
 "
@@ -21,10 +22,17 @@ apt-get update
 apt-get install -y --no-install-recommends ${INSTALL_PACKAGES}
 
 
-LOCALTIME_FILE=/usr/share/zoneinfo/Asia/Tokyo
+# sudo proxy
+cat << EOT >> /etc/sudoers.d/proxy_env
+Defaults env_keep="http_proxy"
+Defaults env_keep+="https_proxy"
+Defaults env_keep+="HTTP_PROXY"
+Defaults env_keep+="HTTPS_PROXY"
+EOT
 
 
 # ロケールを日本語にセットするが、メッセージ出力は翻訳しない
+LOCALTIME_FILE=/usr/share/zoneinfo/Asia/Tokyo
 update-locale LANG=ja_JP.UTF-8 LC_MESSAGES=C
 
 # 前のスクリプトでtzdataがインストールされていることを確認する
